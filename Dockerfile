@@ -1,15 +1,13 @@
-# Use the official ChromaDB image
+# Start from the official ChromaDB image (assuming this is the base you are using)
 FROM chromadb/chroma:latest
 
-# Set environment variables
-# This tells Chroma to listen on all interfaces so Liara can reach it
-ENV CHROMA_SERVER_HOST=0.0.0.0
-ENV CHROMA_SERVER_PORT=8000
+# Set the environment variable to explicitly tell Chroma where to find the data
+# We assume the uploaded folder is at the root of the deployment directory.
+ENV CHROMA_SERVER_ROOT_PATH /dishdash_vector_db
+ENV CHROMA_SERVER_NO_COPY_ON_STARTUP true
 
-
-# Copy your local data into the container's default storage path
-# This "bakes" your zip file data into the server
-COPY ./data /chroma/chroma
-
-# Expose the port
+# Chroma runs on port 8000 by default, EXPOSE is optional but good practice
 EXPOSE 8000
+
+# The default entrypoint for the chromadb image is sufficient
+# CMD ["uvicorn", "chroma.server.api:app", "--host", "0.0.0.0", "--port", "8000"]
